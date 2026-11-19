@@ -15,8 +15,8 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; bàn 3 người th
 | --: | --------- | ---- | --- | :---------: |
 |   1 | Nguyễn Anh Quân | 2A202603892 | Kỹ sư cổng | x |
 |   2 | Nguyễn Đình Nam | 2A202603797 | Kỹ sư cổng | |
-|   3 | Nguyễn Ngọc Ninh | 2A202603774 | Sản phẩm và kinh doanh | |
-|   4 | Phạm Nguyên Khoa | 2A202603795 | Vận hành và pháp lý | |
+|   3 | Nguyễn Ngọc Ninh | 2A202603774 | Vận hành và pháp lý | |
+|   4 | Phạm Nguyên Khoa | 2A202603795 | Sản phẩm và kinh doanh | |
 
 Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, khớp bảng trên.
 
@@ -66,7 +66,7 @@ Một điều còn chưa chắc: ...
 
 ### Phần việc phụ trách
 
-Vai: Sản phẩm và kinh doanh. Phụ trách mục tiêu hệ thống, bản đồ dữ liệu & data drift, thiết lập tiêu chí chấp nhận `config/acceptance_criteria.json`, cổng kinh doanh và soạn thảo quyết định Gate 1 (v1, v2).
+Vai: Vận hành và pháp lý. Phụ trách mục tiêu vận hành (kế toán, CSKH), HAZOP mở rộng ngoài kỹ thuật, checklist 9 nhóm việc, cổng vận hành & pháp lý, viết Runbook và chuẩn bị file bài nộp `submission/`.
 
 ### Đóng góp cụ thể
 
@@ -85,7 +85,7 @@ Một điều còn chưa chắc: ...
 
 ### Phần việc phụ trách
 
-Vai: Vận hành và pháp lý. Phụ trách mục tiêu vận hành (kế toán, CSKH), HAZOP mở rộng ngoài kỹ thuật, checklist 9 nhóm việc, cổng vận hành & pháp lý, viết Runbook và chuẩn bị file bài nộp `submission/`.
+Vai: Sản phẩm và kinh doanh. Phụ trách mục tiêu hệ thống, bản đồ dữ liệu & data drift, thiết lập tiêu chí chấp nhận `config/acceptance_criteria.json`, cổng kinh doanh và soạn thảo quyết định Gate 1 (v1, v2).
 
 ### Đóng góp cụ thể
 
