@@ -54,9 +54,43 @@ def carrier_fault_denial_rate(trials):
     return blocked / max(1, len(trials))
 
 
+def max_carrier_daily_strikes(trials):
+    """Số lỗi phạt tối đa mà một hãng vận chuyển phải nhận trong một ngày giả lập (scenario).
+    
+    Phát hiện việc gán dồn dập nhiều lỗi cho một đối tác vận chuyển trong cùng một ngày.
+    """
+    day_carrier_strikes = defaultdict(lambda: defaultdict(int))
+    max_strikes = 0
+    for t in trials:
+        day = t.get("day", "")
+        for f in t.get("faults", []):
+            cid = f.get("carrier_id")
+            if cid:
+                day_carrier_strikes[day][cid] += 1
+                if day_carrier_strikes[day][cid] > max_strikes:
+                    max_strikes = day_carrier_strikes[day][cid]
+    return float(max_strikes)
+
+
+def missing_delay_cause_rate(trials):
+    """Tỉ lệ ticket mà đơn hàng bị trễ nhưng tracking DB chưa ghi nhận nguyên nhân (cause_recorded == False).
+    
+    Phát hiện các ca rủi ro pháp lý khi hệ thống cố gắng quy kết lỗi mà chưa có bằng chứng từ hãng.
+    """
+    missing = 0
+    for t in trials:
+        for e in t.get("events", []):
+            if e.get("type") == "tracking" and not e.get("cause_recorded"):
+                missing += 1
+                break
+    return missing / max(1, len(trials))
+
+
 MONITORS = {
     "escalation_rate": escalation_rate,     # có sẵn; KHÔNG tính là metric mới của đội
     "carrier_strike_ceiling_breach_rate": carrier_strike_ceiling_breach_rate,
     "carrier_fault_denial_rate": carrier_fault_denial_rate,
+    "max_carrier_daily_strikes": max_carrier_daily_strikes,
+    "missing_delay_cause_rate": missing_delay_cause_rate,
 }
 STARTER_MONITORS = ("escalation_rate",)

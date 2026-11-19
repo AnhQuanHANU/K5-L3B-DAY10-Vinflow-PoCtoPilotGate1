@@ -1,8 +1,8 @@
 {
- "run_id": "R-S3-grade-20261119-165814-b158a7",
+ "run_id": "R-S3-grade-20261119-170209-0eb637",
  "incident": "S3",
  "grader_version": "lab10-1.0",
- "code_hash": "b158a7e46082331390ed9843b86f9c2042f8aa7c39fd72ddfcc23ab537ff867f",
+ "code_hash": "0eb637a8bccf96e8020c4e3eadbcc704153db65a94e4754870466babf622fab2",
  "integrity": {
   "ok": true,
   "changed": [],
@@ -139,7 +139,9 @@
    "monitors": {
     "escalation_rate": 0.227273,
     "carrier_strike_ceiling_breach_rate": 0.3,
-    "carrier_fault_denial_rate": 0.0
+    "carrier_fault_denial_rate": 0.0,
+    "max_carrier_daily_strikes": 5.0,
+    "missing_delay_cause_rate": 0.0
    },
    "by_segment": {
     "warehouse": [
@@ -392,7 +394,9 @@
    "monitors": {
     "escalation_rate": 0.0,
     "carrier_strike_ceiling_breach_rate": 0.6,
-    "carrier_fault_denial_rate": 0.0
+    "carrier_fault_denial_rate": 0.0,
+    "max_carrier_daily_strikes": 20.0,
+    "missing_delay_cause_rate": 0.166667
    },
    "by_segment": {
     "warehouse": [
@@ -581,7 +585,9 @@
    "monitors": {
     "escalation_rate": 0.227273,
     "carrier_strike_ceiling_breach_rate": 0.3,
-    "carrier_fault_denial_rate": 0.0
+    "carrier_fault_denial_rate": 0.0,
+    "max_carrier_daily_strikes": 5.0,
+    "missing_delay_cause_rate": 0.0
    },
    "by_segment": {
     "warehouse": [
@@ -799,7 +805,9 @@
    "monitors": {
     "escalation_rate": 0.083333,
     "carrier_strike_ceiling_breach_rate": 0.4,
-    "carrier_fault_denial_rate": 0.166667
+    "carrier_fault_denial_rate": 0.166667,
+    "max_carrier_daily_strikes": 20.0,
+    "missing_delay_cause_rate": 0.166667
    },
    "by_segment": {
     "warehouse": [
@@ -988,7 +996,9 @@
    "monitors": {
     "escalation_rate": 0.227273,
     "carrier_strike_ceiling_breach_rate": 0.3,
-    "carrier_fault_denial_rate": 0.0
+    "carrier_fault_denial_rate": 0.0,
+    "max_carrier_daily_strikes": 5.0,
+    "missing_delay_cause_rate": 0.0
    },
    "by_segment": {
     "warehouse": [
@@ -1195,7 +1205,9 @@
    "monitors": {
     "escalation_rate": 0.083333,
     "carrier_strike_ceiling_breach_rate": 0.233333,
-    "carrier_fault_denial_rate": 0.333333
+    "carrier_fault_denial_rate": 0.333333,
+    "max_carrier_daily_strikes": 10.0,
+    "missing_delay_cause_rate": 0.166667
    },
    "by_segment": {
     "warehouse": [
@@ -1305,9 +1317,9 @@
   }
  },
  "run_ids": {
-  "before": "R-S3-before-20261119-165815-b158a7",
-  "prepared": "R-S3-prepared-20261119-165815-b158a7",
-  "after": "R-S3-after-20261119-165815-b158a7"
+  "before": "R-S3-before-20261119-170210-0eb637",
+  "prepared": "R-S3-prepared-20261119-170210-0eb637",
+  "after": "R-S3-after-20261119-170210-0eb637"
  },
  "visible": {
   "before_red": true,
@@ -1330,7 +1342,9 @@
   "ok": true,
   "new": [
    "carrier_strike_ceiling_breach_rate",
-   "carrier_fault_denial_rate"
+   "carrier_fault_denial_rate",
+   "max_carrier_daily_strikes",
+   "missing_delay_cause_rate"
   ],
   "lit": [
    {
@@ -1350,6 +1364,30 @@
     "stage": "after",
     "base": 0.0,
     "incident": 0.333333
+   },
+   {
+    "name": "max_carrier_daily_strikes",
+    "stage": "before",
+    "base": 5.0,
+    "incident": 20.0
+   },
+   {
+    "name": "max_carrier_daily_strikes",
+    "stage": "after",
+    "base": 5.0,
+    "incident": 10.0
+   },
+   {
+    "name": "missing_delay_cause_rate",
+    "stage": "before",
+    "base": 0.0,
+    "incident": 0.166667
+   },
+   {
+    "name": "missing_delay_cause_rate",
+    "stage": "after",
+    "base": 0.0,
+    "incident": 0.166667
    }
   ],
   "errors": []
@@ -1378,5 +1416,5 @@
  "hard_gates_ok": true,
  "score": null,
  "verdict": "PASS-VISIBLE (chưa chạy test ẩn)",
- "seconds": 1.303
+ "seconds": 1.616
 }

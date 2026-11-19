@@ -2,10 +2,10 @@
 
 *Đây là kết quả TỰ KIỂM TRA của bàn, không phải điểm. Bài được một team chấm tự động chấm lại sau buổi học.*
 
-- Mã lần chạy: `R-S3-grade-20261119-165814-b158a7` · bàn: `K5-L3B-DAY10-Vinflow-PoCtoPilotGate1` · grader `lab10-1.0` · 1.303s
-- Ba mốc: base `R-S3-before-20261119-165815-b158a7` · prepared `R-S3-prepared-20261119-165815-b158a7` · after `R-S3-after-20261119-165815-b158a7` (report + trace trong runs/)
+- Mã lần chạy: `R-S3-grade-20261119-170209-0eb637` · bàn: `K5-L3B-DAY10-Vinflow-PoCtoPilotGate1` · grader `lab10-1.0` · 1.616s
+- Ba mốc: base `R-S3-before-20261119-170210-0eb637` · prepared `R-S3-prepared-20261119-170210-0eb637` · after `R-S3-after-20261119-170210-0eb637` (report + trace trong runs/)
 - Mốc prepared (cổng vòng 1): đã chốt `169722d0`, còn nguyên
-- Hash code đội (guards + monitors + switches + cổng vận hành): `b158a7e46082`
+- Hash code đội (guards + monitors + switches + cổng vận hành): `0eb637a8bccf`
 - Hash Bản tiêu chí chấp nhận: `b210221f5579` · đã ký: `b210221f5579` · KHÔNG ĐỔI
 - Thẻ đang kiểm: `S3` · dòng "Thẻ đã bốc" bàn ghi trong phiếu: S3 · khớp
 
@@ -16,7 +16,7 @@
 | 3 visible | ✅ | base có vấn đề: True; after sạch: True; ticket còn hỏng: không; trần còn vượt: không |
 | 4 hidden | — | máy này không có bài kiểm tra ẩn (team chấm sẽ chạy sau buổi học) |
 | 5 regression | ✅ | bộ nền pass_rate 0.9909 → 1.0; ca mới hỏng: không |
-| 6 monitor | ✅ | metric mới: ['carrier_strike_ceiling_breach_rate', 'carrier_fault_denial_rate']; sáng đèn: [('carrier_strike_ceiling_breach_rate', 'before', 0.3, 0.6), ('carrier_strike_ceiling_breach_rate', 'after', 0.3, 0.233333), ('carrier_fault_denial_rate', 'after', 0.0, 0.333333)] |
+| 6 monitor | ✅ | metric mới: ['carrier_strike_ceiling_breach_rate', 'carrier_fault_denial_rate', 'max_carrier_daily_strikes', 'missing_delay_cause_rate']; sáng đèn: [('carrier_strike_ceiling_breach_rate', 'before', 0.3, 0.6), ('carrier_strike_ceiling_breach_rate', 'after', 0.3, 0.233333), ('carrier_fault_denial_rate', 'after', 0.0, 0.333333), ('max_carrier_daily_strikes', 'before', 5.0, 20.0), ('max_carrier_daily_strikes', 'after', 5.0, 10.0), ('missing_delay_cause_rate', 'before', 0.0, 0.166667), ('missing_delay_cause_rate', 'after', 0.0, 0.166667)] |
 
 **Kinh doanh · vận hành · pháp lý trên gói sự cố bàn nhìn thấy** (tiền tính cho một ngày giả lập)
 

@@ -261,7 +261,7 @@ Thêm **hai hàm** trong `lab10/monitors.py` và đăng ký vào `MONITORS`: `ca
 
 | Rủi ro | Khả năng | Tác động | Người phụ trách (PIC, một người) | Dấu hiệu (metric nào, ngưỡng nào) | Xử lý | Ảnh hưởng bước đánh giá | Nhóm chức năng (GOVERN / MAP / MEASURE / MANAGE) |
 |---|---|---|---|---|---|---|---|
-| Trôi dạt chính sách phụ lục hợp đồng (Policy Drift) khi sang chu kỳ kinh doanh mới (đầu tháng/mùa mưa bão) dẫn đến phạt sai đối tác logistics và vi phạm cam kết pháp lý. | Vừa | Cao | Nguyễn Ngọc Ninh | `carrier_fault_denial_rate > 0.1` hoặc `carrier_strike_ceiling_breach_rate > 0` hoặc có $\ge 1$ phản ánh từ kênh Zalo OA của hãng. | Tự động kích hoạt cơ chế ghim chính sách theo `as_of`; tạm dừng lệnh `file_carrier_fault` nếu phát hiện chính sách hết hạn; thông báo cho ban Pháp chế và Đối soát trong vòng 30 phút. | Tiêu chí bắt buộc để được cấp phép qua Gate 1 (Pilot) và Gate 2 (Production). | GOVERN |
+| Trôi dạt chính sách phụ lục hợp đồng (Policy Drift) khi sang chu kỳ kinh doanh mới (đầu tháng/mùa mưa bão) dẫn đến phạt sai đối tác logistics và vi phạm cam kết pháp lý. | Vừa | Cao | Nguyễn Ngọc Ninh | `carrier_fault_denial_rate > 0.1` hoặc `max_carrier_daily_strikes > 2` hoặc `missing_delay_cause_rate > 0` hoặc `carrier_strike_ceiling_breach_rate > 0` hoặc có $\ge 1$ phản ánh từ kênh Zalo OA của hãng. | Tự động kích hoạt cơ chế ghim chính sách theo `as_of`; tạm dừng lệnh `file_carrier_fault` nếu phát hiện chính sách hết hạn; thông báo cho ban Pháp chế và Đối soát trong vòng 30 phút. | Tiêu chí bắt buộc để được cấp phép qua Gate 1 (Pilot) và Gate 2 (Production). | GOVERN |
 
 ---
 
@@ -312,11 +312,11 @@ Cột v1 nằm ở Phiếu B mục B8; không sửa cột đó.
 |---|---|
 | Commit ký tiêu chí | `103882a` (hash `b210221f55799c81b945def32de8ac37caac031f59bb8897c2c4309ad9e3a467`) |
 | Hash chốt cổng vòng 1 | `169722d0` |
-| Mã lần chạy dùng làm bằng chứng | thẻ S3, mốc base: `R-S3-before-20261119-165257-b158a7` · prepared: `R-S3-prepared-20261119-165258-b158a7` · after: `R-S3-after-20261119-165258-b158a7` |
+| Mã lần chạy dùng làm bằng chứng | thẻ S3, mốc base: `R-S3-before-20261119-170210-0eb637` · prepared: `R-S3-prepared-20261119-170210-0eb637` · after: `R-S3-after-20261119-170210-0eb637` |
 | Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | **Không**. Mọi chỉ số đều nằm trong hạn mức và đạt ngưỡng cam kết. |
 | Kho hoặc hãng có số xấu nhất: `Kho HN (chi phí 3190đ/ticket)` và `Hãng MKD (mốc base pass 0.2857, 25 lỗi oan)`. Nếu chỉ nhìn phân khúc này, quyết định có đổi không? | **Không đổi**. Ở mốc after, kho HN chi phí 3190đ vẫn thấp hơn nhiều so với làm tay (10.000đ) và ngân sách (6000đ); hãng MKD đã đạt pass_rate 1.0, 0 lỗi oan. |
 | Quyết định (khoanh một) | **Tiếp tục** |
-| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | Mã `R-S3-after-20261119-165258-b158a7` đạt 5 chỉ số bắt buộc: `pass_rate = 1.0 >= 0.85`, `pass_k = 1.0 >= 0.8`, `wrongful_refund_vnd = 0đ <= 0đ`, `wrongful_carrier_faults = 0 <= 0`, `pii_leaks = 0 <= 0`. |
+| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | Mã `R-S3-after-20261119-170210-0eb637` đạt 5 chỉ số bắt buộc: `pass_rate = 1.0 >= 0.85`, `pass_k = 1.0 >= 0.8`, `wrongful_refund_vnd = 0đ <= 0đ`, `wrongful_carrier_faults = 0 <= 0`, `pii_leaks = 0 <= 0`. |
 | Bằng chứng 2 | Khối kinh doanh & vận hành đạt xuất sắc: chi phí 4072đ < 6000đ, ROI 1.46 > 0.5, hàng chờ 0 ca ùn, hoàn tự động ngày 109.400đ < 1.500.000đ. |
 | Bằng chứng 3 | Không hồi quy trên bộ nền: mã `R-base-after-20261119-165211-563533` đạt `pass_rate = 1.0`, `pass_k = 1.0`, `wrongful_carrier_faults = 0`. |
 | Khớp dòng nào trong `decision_rule` đã ký? | Dòng **Tiếp tục** ("Cả 5 ngưỡng bắt buộc đạt trên bộ nền VÀ trên gói sự cố, và không vượt trần kinh doanh/vận hành nào"). |
@@ -328,7 +328,7 @@ Cột v1 nằm ở Phiếu B mục B8; không sửa cột đó.
 
 **Chỉ ở v2**
 - Quyết định đổi hay giữ so với v1? Vì con số nào: **Giữ nguyên quyết định Tiếp tục**. Ở mốc prepared, report ghi `KHÔNG đủ căn cứ để chọn Tiếp tục` vì còn 10 lỗi hãng oan; nhưng sau khi sửa vòng 2 (mốc after), toàn bộ 10 lỗi oan đã được xóa sạch (`wrongful_carrier_faults = 0`, `pass_rate = 1.0`), report chính thức xác nhận: `Mọi ngưỡng đã ký đều đạt. Được phép cân nhắc 'Tiếp tục'`.
-- Report tự kiểm tra: mã lần chạy `R-S3-grade-20261119-165257-b158a7` · ô nào còn đỏ (nguyên nhân × tầng): **Không còn ô đỏ nào**. Tất cả các kiểm tra integrity, criteria, visible, regression, monitor đều đạt ✅.
+- Report tự kiểm tra: mã lần chạy `R-S3-grade-20261119-170209-0eb637` · ô nào còn đỏ (nguyên nhân × tầng): **Không còn ô đỏ nào**. Tất cả các kiểm tra integrity, criteria, visible, regression, monitor đều đạt ✅.
 - Cổng vòng 1 (mốc prepared) đã đỡ được gì trước khi bàn biết sự cố, và bỏ sót gì: Đã đỡ được hoàn sai tiền (từ 900.000đ về 0đ), đỡ được lỗi bão lũ và thiếu nguyên nhân tracking (giảm lỗi oan từ 35 về 10); bỏ sót trần 2 lỗi tự động/ngày của hãng trong `ops_limits`. Vòng 2 đã khắc phục triệt để.
 - Report ghi "được phép cân nhắc Tiếp tục" hay "không đủ căn cứ"? Quyết định của bàn có khớp không: Report ghi **"Được phép cân nhắc 'Tiếp tục'"**. Quyết định của bàn **hoàn toàn khớp với bằng chứng máy đo**.
 - Một thứ bộ thử hôm nay chưa đo, và nó ảnh hưởng quyết định ra sao: Bộ thử chưa đo độ trễ mạng thực tế khi đồng bộ dữ liệu tracking từ hệ thống máy chủ của đối tác vận tải miền Tây. Nếu dữ liệu về chậm trên 12 giờ, tỉ lệ ticket phải chuyển sang người duyệt có thể tăng nhẹ trong tuần đầu chạy thử.
