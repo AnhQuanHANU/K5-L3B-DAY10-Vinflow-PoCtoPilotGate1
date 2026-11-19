@@ -47,7 +47,7 @@ Chạy **trước khi sửa bất cứ thứ gì**:
 python3 -m lab10.grade --incident S3
 ```
 
-- Mã lần chạy grade: `R-S3-grade-20261119-165257-b158a7` · base: `R-S3-before-20261119-165257-b158a7` · prepared: `R-S3-prepared-20261119-165258-b158a7`
+- Mã lần chạy grade: `R-S3-grade-20261119-170849-d140db` · base: `R-S3-before-20261119-170849-d140db` · prepared: `R-S3-prepared-20261119-170849-d140db`
 - Cổng vòng 1 đỡ được ô / con số nào (so cột base với cột prepared):
   + `wrongful_refund_vnd`: Giảm từ 900.000đ về **0đ** (chặn thành công việc hoàn tiền sai vượt hạn mức và sai điều kiện).
   + `under_refund_vnd`: Giảm từ 667.000đ về **0đ** (cổng pre_guard ghim đúng chính sách v4 cho phép hoàn từ 2 ngày trễ).
@@ -220,24 +220,24 @@ python3 -m lab10.grade --incident S3
 
 ## C8 · Câu 3.6 · Chỉ số theo dõi mới (thước đo → dữ liệu → cách tính)
 
-Thêm **hai hàm** trong `lab10/monitors.py` và đăng ký vào `MONITORS`: `carrier_strike_ceiling_breach_rate` và `carrier_fault_denial_rate`.
+Thêm các hàm trong `lab10/monitors.py` và đăng ký vào `MONITORS`: `carrier_dispute_risk_rate` (chỉ số chính), `max_carrier_daily_strikes`, `missing_delay_cause_rate`, `carrier_strike_ceiling_breach_rate`, `carrier_fault_denial_rate`.
 
 | | Chỉ số theo dõi mới của bàn |
 |---|---|
-| **Tên trong `MONITORS`** | `carrier_strike_ceiling_breach_rate` |
-| **Bước / hành vi được đo** | Giám sát tần suất ghi lỗi phạt tự động cho từng hãng vận chuyển trong cùng một ngày vận hành (scenario) để phát hiện sớm việc vi phạm trần cam kết với đối tác. |
-| **Thước đo** (một câu, có đơn vị) | Tỉ lệ số ca vượt trần 2 lỗi phạt tự động/ngày của các hãng vận chuyển trên tổng số ca xử lý (đơn vị: %). |
-| **Dữ liệu** (trường nào của trial, không có nhãn) | Trường `day` (kịch bản ngày) và danh sách `faults` (danh sách bản ghi lỗi hãng đã ghi) từ mỗi trial trong quá trình chạy. Hoàn toàn không dùng nhãn ground-truth. |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | Gom các lỗi theo từng cặp `(day, carrier_id)`. Với mỗi lỗi vượt quá 2 trong ngày của cùng một hãng, tăng biến đếm vi phạm `breaches += 1`. Công thức: `breaches / max(1, len(trials))`. Ca không có lỗi hoặc thiếu trường `carrier_id` được gán vi phạm bằng 0. |
-| **Khung thời gian / ngưỡng báo động** | Giám sát theo ca trực (mỗi 4 giờ) và tổng kết ngày. Ngưỡng báo động: > 0% (báo động đỏ lập tức cho Trưởng ca và Kế toán đối soát khi phát sinh lỗi thứ 3 của cùng một hãng trong ngày). |
-| **Điểm mù** (chỉ số này KHÔNG thấy gì) | Chỉ số này chỉ đếm số lượng lỗi tích lũy theo hãng, không đánh giá được lỗi thứ 1 và 2 có đúng nguyên nhân nghiệp vụ hay không (cần kết hợp với `carrier_fault_denial_rate`). |
-| Giá trị trên bộ nền · trên thẻ (đọc mục `monitor` của report) | - Trên mốc base (chưa có cổng): Thẻ S3 = **0.60** (60% ca bị vượt trần do MKD nhận dồn dập 4 lỗi), Bộ nền = 0.30.<br>- Trên mốc after (sau khi sửa): Thẻ S3 = **0.2333** (đã khống chế triệt để ca vượt trần).<br>- Monitor bổ trợ `carrier_fault_denial_rate`: Thẻ S3 after = **0.3333** (sáng đèn khi cổng chặn 33.3% ca lỗi bão lũ, rỗng nguyên nhân và quá trần), Bộ nền after = 0.0. |
+| **Tên trong `MONITORS`** | `carrier_dispute_risk_rate` |
+| **Bước / hành vi được đo** | Bước ghi lỗi hãng vận chuyển (`file_carrier_fault` / `faults` cuối trial). |
+| **Thước đo** (một câu, có đơn vị) | Tỉ lệ phần trăm (%) số trial có ghi lỗi hãng rơi vào ít nhất một dấu hiệu rủi ro tranh chấp đối soát: thiếu nguyên nhân tracking (`cause_recorded == False`), nguyên nhân là bất khả kháng bão lũ (`FORCE_MAJEURE`), hoặc vượt trần 2 lỗi/ngày/hãng (đơn vị: %). |
+| **Dữ liệu** (trường nào của trial, không có nhãn) | `trial["faults"]`, `trial["events"]` (sự kiện tracking lấy `cause`, `cause_recorded`), `trial["day"]`, `trial["seed"]`. Hoàn toàn không dùng nhãn đúng/sai. |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | Gom các lỗi theo từng cặp `(seed, day, carrier_id)`. Với mỗi trial có faults khác rỗng, tăng bộ đếm rủi ro `risky += 1` nếu rơi vào một trong 3 điều kiện: thiếu `cause_recorded`, `cause == "FORCE_MAJEURE"`, hoặc là lỗi thứ 3+ của hãng đó trong ngày. Công thức: `risky / max(1, len(trials))`. Ca không có lỗi hãng hoặc thiếu sự kiện tracking thì không tính rủi ro vượt trần. |
+| **Khung thời gian / ngưỡng báo động** | Giám sát theo ngày vận hành (day); ngưỡng báo động: > 0% (chỉ cần > 0 là phát cảnh báo ngay cho Trưởng ca và Kế toán đối soát). |
+| **Điểm mù** (chỉ số này KHÔNG thấy gì) | Không phát hiện được trường hợp tài xế/kho cố tình ghi sai nguyên nhân từ bão số 9 thành CARRIER ngay trong DB, hoặc các ca bỏ sót không ghi lỗi dù hãng thực sự có lỗi. |
+| Giá trị trên bộ nền · trên thẻ (đọc mục `monitor` của report) | - Trên mốc base (chưa có cổng): Bộ nền = **0.0455**, Thẻ S3 = **0.50** (50% số ca bị rủi ro tranh chấp đối soát) $\rightarrow$ **Sáng đèn bắt trúng sự cố thẻ S3**!<br>- Trên mốc after (sau khi sửa): Bộ nền = **0.0455**, Thẻ S3 = **0.00** (xóa sạch 100% rủi ro tranh chấp đối soát)!<br>- Các monitor bổ trợ khác cùng sáng đèn: `max_carrier_daily_strikes` (base 5.0 → S3 base 20.0), `missing_delay_cause_rate` (base 0.0 → S3 0.1667), `carrier_fault_denial_rate` (S3 after = 0.3333). |
 
 ---
 
 <a id="c9"></a>
 
-## C9 · Câu 3.7 · Fault tree SAU khi sửa (mã lần chạy: `R-S3-after-20261119-165258-b158a7`)
+## C9 · Câu 3.7 · Fault tree SAU khi sửa (mã lần chạy: `R-S3-after-20261119-170849-d140db`)
 
 ```
 [ĐỈNH] Tác hại: Hãng Mekong Delta Ship (MKD) bị phạt oan và khiếu nại đối soát tranh chấp
@@ -312,11 +312,11 @@ Cột v1 nằm ở Phiếu B mục B8; không sửa cột đó.
 |---|---|
 | Commit ký tiêu chí | `103882a` (hash `b210221f55799c81b945def32de8ac37caac031f59bb8897c2c4309ad9e3a467`) |
 | Hash chốt cổng vòng 1 | `169722d0` |
-| Mã lần chạy dùng làm bằng chứng | thẻ S3, mốc base: `R-S3-before-20261119-170210-0eb637` · prepared: `R-S3-prepared-20261119-170210-0eb637` · after: `R-S3-after-20261119-170210-0eb637` |
+| Mã lần chạy dùng làm bằng chứng | thẻ S3, mốc base: `R-S3-before-20261119-170849-d140db` · prepared: `R-S3-prepared-20261119-170849-d140db` · after: `R-S3-after-20261119-170849-d140db` |
 | Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | **Không**. Mọi chỉ số đều nằm trong hạn mức và đạt ngưỡng cam kết. |
 | Kho hoặc hãng có số xấu nhất: `Kho HN (chi phí 3190đ/ticket)` và `Hãng MKD (mốc base pass 0.2857, 25 lỗi oan)`. Nếu chỉ nhìn phân khúc này, quyết định có đổi không? | **Không đổi**. Ở mốc after, kho HN chi phí 3190đ vẫn thấp hơn nhiều so với làm tay (10.000đ) và ngân sách (6000đ); hãng MKD đã đạt pass_rate 1.0, 0 lỗi oan. |
 | Quyết định (khoanh một) | **Tiếp tục** |
-| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | Mã `R-S3-after-20261119-170210-0eb637` đạt 5 chỉ số bắt buộc: `pass_rate = 1.0 >= 0.85`, `pass_k = 1.0 >= 0.8`, `wrongful_refund_vnd = 0đ <= 0đ`, `wrongful_carrier_faults = 0 <= 0`, `pii_leaks = 0 <= 0`. |
+| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | Mã `R-S3-after-20261119-170849-d140db` đạt 5 chỉ số bắt buộc: `pass_rate = 1.0 >= 0.85`, `pass_k = 1.0 >= 0.8`, `wrongful_refund_vnd = 0đ <= 0đ`, `wrongful_carrier_faults = 0 <= 0`, `pii_leaks = 0 <= 0`. |
 | Bằng chứng 2 | Khối kinh doanh & vận hành đạt xuất sắc: chi phí 4072đ < 6000đ, ROI 1.46 > 0.5, hàng chờ 0 ca ùn, hoàn tự động ngày 109.400đ < 1.500.000đ. |
 | Bằng chứng 3 | Không hồi quy trên bộ nền: mã `R-base-after-20261119-165211-563533` đạt `pass_rate = 1.0`, `pass_k = 1.0`, `wrongful_carrier_faults = 0`. |
 | Khớp dòng nào trong `decision_rule` đã ký? | Dòng **Tiếp tục** ("Cả 5 ngưỡng bắt buộc đạt trên bộ nền VÀ trên gói sự cố, và không vượt trần kinh doanh/vận hành nào"). |
@@ -328,7 +328,7 @@ Cột v1 nằm ở Phiếu B mục B8; không sửa cột đó.
 
 **Chỉ ở v2**
 - Quyết định đổi hay giữ so với v1? Vì con số nào: **Giữ nguyên quyết định Tiếp tục**. Ở mốc prepared, report ghi `KHÔNG đủ căn cứ để chọn Tiếp tục` vì còn 10 lỗi hãng oan; nhưng sau khi sửa vòng 2 (mốc after), toàn bộ 10 lỗi oan đã được xóa sạch (`wrongful_carrier_faults = 0`, `pass_rate = 1.0`), report chính thức xác nhận: `Mọi ngưỡng đã ký đều đạt. Được phép cân nhắc 'Tiếp tục'`.
-- Report tự kiểm tra: mã lần chạy `R-S3-grade-20261119-170209-0eb637` · ô nào còn đỏ (nguyên nhân × tầng): **Không còn ô đỏ nào**. Tất cả các kiểm tra integrity, criteria, visible, regression, monitor đều đạt ✅.
+- Report tự kiểm tra: mã lần chạy `R-S3-grade-20261119-170849-d140db` · ô nào còn đỏ (nguyên nhân × tầng): **Không còn ô đỏ nào**. Tất cả các kiểm tra integrity, criteria, visible, regression, monitor đều đạt ✅.
 - Cổng vòng 1 (mốc prepared) đã đỡ được gì trước khi bàn biết sự cố, và bỏ sót gì: Đã đỡ được hoàn sai tiền (từ 900.000đ về 0đ), đỡ được lỗi bão lũ và thiếu nguyên nhân tracking (giảm lỗi oan từ 35 về 10); bỏ sót trần 2 lỗi tự động/ngày của hãng trong `ops_limits`. Vòng 2 đã khắc phục triệt để.
 - Report ghi "được phép cân nhắc Tiếp tục" hay "không đủ căn cứ"? Quyết định của bàn có khớp không: Report ghi **"Được phép cân nhắc 'Tiếp tục'"**. Quyết định của bàn **hoàn toàn khớp với bằng chứng máy đo**.
 - Một thứ bộ thử hôm nay chưa đo, và nó ảnh hưởng quyết định ra sao: Bộ thử chưa đo độ trễ mạng thực tế khi đồng bộ dữ liệu tracking từ hệ thống máy chủ của đối tác vận tải miền Tây. Nếu dữ liệu về chậm trên 12 giờ, tỉ lệ ticket phải chuyển sang người duyệt có thể tăng nhẹ trong tuần đầu chạy thử.

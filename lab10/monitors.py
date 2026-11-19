@@ -86,11 +86,38 @@ def missing_delay_cause_rate(trials):
     return missing / max(1, len(trials))
 
 
+def carrier_dispute_risk_rate(trials):
+    """Tỉ lệ ticket có ghi lỗi hãng rơi vào ít nhất một dấu hiệu rủi ro tranh chấp:
+    thiếu nguyên nhân tracking (cause_recorded == False), nguyên nhân bão lũ (FORCE_MAJEURE),
+    hoặc vượt trần 2 lỗi/ngày/hãng (Nam đề xuất).
+    """
+    daily_counts = {}
+    risky = 0
+    for t in trials:
+        faults = t.get("faults") or []
+        if not faults:
+            continue
+        tracking = next((e for e in reversed(t.get("events", [])) if e.get("type") == "tracking"), {})
+        unrecorded = not tracking.get("cause_recorded", False)
+        force_majeure = tracking.get("cause") == "FORCE_MAJEURE"
+        ceiling_breach = False
+        for f in faults:
+            carrier = f.get("carrier_id") if isinstance(f, dict) else (f[0] if isinstance(f, (list, tuple)) else str(f))
+            key = (t.get("seed"), t.get("day"), carrier)
+            daily_counts[key] = daily_counts.get(key, 0) + 1
+            if daily_counts[key] > 2:
+                ceiling_breach = True
+        if unrecorded or force_majeure or ceiling_breach:
+            risky += 1
+    return risky / max(1, len(trials))
+
+
 MONITORS = {
     "escalation_rate": escalation_rate,     # có sẵn; KHÔNG tính là metric mới của đội
     "carrier_strike_ceiling_breach_rate": carrier_strike_ceiling_breach_rate,
     "carrier_fault_denial_rate": carrier_fault_denial_rate,
     "max_carrier_daily_strikes": max_carrier_daily_strikes,
     "missing_delay_cause_rate": missing_delay_cause_rate,
+    "carrier_dispute_risk_rate": carrier_dispute_risk_rate,
 }
 STARTER_MONITORS = ("escalation_rate",)
