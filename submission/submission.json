@@ -1,12 +1,17 @@
 {
-  "team": "",
-  "members": [],
-  "incident": "",
-  "decision_v1": "",
-  "decision_v2": "",
+  "team": "K5-L3B-DAY10-Vinflow-PoCtoPilotGate1",
+  "members": [
+    "Nguyễn Anh Quân",
+    "Nguyễn Đình Nam",
+    "Phạm Nguyên Khoa",
+    "Nguyễn Ngọc Ninh"
+  ],
+  "incident": "S3",
+  "decision_v1": "Tiếp tục",
+  "decision_v2": "Tiếp tục",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Nhóm giả định rằng các bản cập nhật chính sách hợp đồng pháp lý (phụ lục miễn trừ thiên tai) và dữ liệu nguyên nhân giao trễ từ hệ thống tracking của đối tác vận chuyển luôn được chuẩn hóa và ghi nhận chính xác theo thời gian thực.",
+    "reduce_or_prevent": "Cổng kiểm soát của đội thực sự NGĂN HẲN tác hại ghi lỗi oan và vượt trần đối tác, vì cổng được đặt tại tầng máy chủ độc lập (write_gate), đếm số lỗi thực tế trong ngày và đối chiếu trực tiếp với quy tắc chính sách hiệu lực trước khi cho phép ghi vào sổ cái.",
+    "measure_in_pilot": "Cần đo lường lại độ trễ cập nhật trạng thái tracking từ các hãng vận tải địa phương, tỉ lệ tranh chấp đối soát thực tế hàng tuần với các đối tác logistics, và lưu lượng ticket phát sinh đột biến khi có cảnh báo thiên tai/bão lũ trên thực địa."
   }
 }

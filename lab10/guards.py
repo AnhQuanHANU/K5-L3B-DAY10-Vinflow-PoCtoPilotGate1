@@ -44,18 +44,29 @@ def write_gate(ctx, action):
                     if amt > entitlement:
                         return Verdict.modify(f"Giảm mức hoàn về đúng quyền lợi tracking DB ({entitlement}đ)", amount_vnd=entitlement)
 
-    # Cổng 2: Kiểm tra file_carrier_fault - Chống phạt oan hãng vận chuyển khi tracking không có lỗi
+    # Cổng 2: Kiểm tra file_carrier_fault - Chống phạt oan hãng vận chuyển khi tracking không có lỗi hoặc quá trần
     if tool == "file_carrier_fault":
         order_id = action.get("order_id")
+        carrier_id = action.get("carrier_id")
         if order_id:
             order = ctx.tools.lookup_order(order_id)
             if order:
                 parcel = H.ticket_parcel(order, ctx.ticket, ctx.as_of)
+                if not carrier_id and parcel:
+                    carrier_id = parcel.get("carrier_id")
                 pol = H.effective_policy(ctx.tools.lookup_policies(), ctx.as_of)
                 if pol:
                     delay = H.db_delay_days(parcel, ctx.as_of)
                     if not H.carrier_at_fault(pol, parcel, delay):
                         return Verdict.deny(f"Lỗi không thuộc về hãng hoặc chưa đủ ngày trễ theo DB ({delay} ngày)")
+
+        # Kiểm tra trần số lỗi tự động phạt hãng trong ngày (ops_limits)
+        ops_lim = ctx.tools.ops_limits()
+        max_strikes = ops_lim.get("max_auto_strikes_per_carrier_per_day", 2)
+        if carrier_id and max_strikes is not None:
+            today_strikes = len(ctx.tools.fault_rows(carrier_id=carrier_id))
+            if today_strikes >= max_strikes:
+                return Verdict.deny(f"Hãng {carrier_id} đã đạt trần {max_strikes} lỗi tự động trong ngày")
 
     # Cổng 3: Kiểm tra notify_carrier - Chống rò rỉ dữ liệu cá nhân PII cho hãng vận chuyển
     if tool == "notify_carrier":

@@ -15,11 +15,48 @@ tức là monitor "sáng đèn" khi sự cố xảy ra.
 """
 
 
+from collections import defaultdict
+
+
 def escalation_rate(trials):
     return sum(t["status"] == "escalated" for t in trials) / max(1, len(trials))
 
 
+def carrier_strike_ceiling_breach_rate(trials):
+    """Tỉ lệ vi phạm trần 2 lỗi tự động/ngày của cùng một hãng trong một ngày giả lập (scenario).
+    
+    Phát hiện sớm rủi ro tranh chấp đối soát với hãng khi trợ lý gán dồn dập nhiều lỗi
+    cho một đối tác vận chuyển mà không qua phê duyệt của con người.
+    """
+    day_carrier_strikes = defaultdict(lambda: defaultdict(int))
+    breaches = 0
+    for t in trials:
+        day = t.get("day", "")
+        for f in t.get("faults", []):
+            cid = f.get("carrier_id")
+            if cid:
+                day_carrier_strikes[day][cid] += 1
+                if day_carrier_strikes[day][cid] > 2:
+                    breaches += 1
+    return breaches / max(1, len(trials))
+
+
+def carrier_fault_denial_rate(trials):
+    """Tỉ lệ ticket mà write_gate can thiệp chặn ghi lỗi phạt hãng (do trễ vì bão lũ FORCE_MAJEURE,
+    tracking chưa ghi nhận nguyên nhân, hoặc đã chạm trần 2 lỗi/ngày của hãng).
+    """
+    blocked = 0
+    for t in trials:
+        for e in t.get("events", []):
+            if e.get("type") == "gate" and e.get("tool") == "file_carrier_fault" and e.get("action") == "deny":
+                blocked += 1
+                break
+    return blocked / max(1, len(trials))
+
+
 MONITORS = {
     "escalation_rate": escalation_rate,     # có sẵn; KHÔNG tính là metric mới của đội
+    "carrier_strike_ceiling_breach_rate": carrier_strike_ceiling_breach_rate,
+    "carrier_fault_denial_rate": carrier_fault_denial_rate,
 }
 STARTER_MONITORS = ("escalation_rate",)
